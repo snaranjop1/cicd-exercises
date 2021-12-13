@@ -1,0 +1,34 @@
+pipeline {
+    agent any
+    stages {
+        stage('Build API') {
+            steps {
+                dir('app') {
+                   echo 'npm install'
+                }
+            }
+        }
+        stage('Test API') {
+            steps {
+                dir('app') {
+                   echo 'npm test'
+                }
+            }
+        }
+        stage('Build docker image') {
+            steps {
+                echo 'docker build -t snaranjomaster/student-app:latest -t snaranjomaster/student-app:$(git describe --tags --abbrev=0) .'
+            }
+        }
+        stage('Push docker image to registry') {
+            steps {
+                echo 'docker push snaranjomaster/student-app -a'
+            }
+        }
+        stage('Deployment') {
+            steps {
+                echo 'kubectl apply -f students-app.yaml'
+            }
+        }
+    }
+}

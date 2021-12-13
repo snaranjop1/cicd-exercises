@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: svc-students-app
+spec:
+  type: LoadBalancer
+  selector:
+    app: students
+  ports:
+    - port: 8080
+      targetPort: 8000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deploy-students-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: students
+  template:
+    metadata:
+      labels:
+        app: students
+      name: students-app
+    spec:
+      containers:
+        - name: students-app
+          image: snaranjomaster/student-app
+          resources:
+            limits:
+              memory: "256Mi"
+              cpu: "100m"
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+          ports:
+            - containerPort: 8000
